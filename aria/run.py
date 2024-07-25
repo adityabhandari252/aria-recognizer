@@ -199,9 +199,9 @@ def sample(args):
         compile=args.compile,
     )
 
-    samples_dir = os.path.join(os.path.dirname(__file__), "..", "samples")
-    if os.path.isdir(samples_dir) is False:
-        os.mkdir(samples_dir)
+    samples_dir = os.path.join(os.path.dirname(__file__), "samples")
+    if not os.path.exists(samples_dir):
+        os.makedirs(samples_dir)
 
     torch.set_printoptions(threshold=float('inf'), linewidth=200) # get full tensor
 
