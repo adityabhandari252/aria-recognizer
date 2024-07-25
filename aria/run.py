@@ -207,6 +207,7 @@ def sample(args):
 
     # print out to .txt
     output_file = os.path.join(samples_dir, 'logits.txt')
+    print(f"Saving logits to {output_file}")
     with open(output_file, 'w') as file:
         for idx, logit in enumerate(print_logits):
             if not isinstance(logit, str):
