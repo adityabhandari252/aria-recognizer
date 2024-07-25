@@ -225,7 +225,7 @@ def sample(args):
         for idx, token in enumerate(results):
             if not isinstance(token, str):
                 token = str(token)
-            file.write(f"Token {idx}: {token}\n")
+            file.write(f"Tokens: {token}\n")
 
     print("Tokens saved to samples/")
 
