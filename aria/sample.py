@@ -117,7 +117,7 @@ def greedy_sample(
     )
 
     print(
-        f"Using hyperparams: temp={temperature}, top_p={top_p}, gamma={cfg_gamma}, gen_len={max_new_tokens}"
+        f" TESTTTTT Using hyperparams: temp={temperature}, top_p={top_p}, gamma={cfg_gamma}, gen_len={max_new_tokens}"
     )
 
     # print out logits for Aditya
