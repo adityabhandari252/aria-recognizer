@@ -4,6 +4,7 @@ import argparse
 import os
 import re
 import sys
+import torch
 
 
 def _parse_sample_args():
@@ -185,7 +186,8 @@ def sample(args):
 
     print(prompt_seq)
 
-    results = greedy_sample(
+    # get array with logits
+    results, print_logits = greedy_sample(
         model=model,
         tokenizer=tokenizer,
         prompts=prompts,
@@ -200,6 +202,21 @@ def sample(args):
     samples_dir = os.path.join(os.path.dirname(__file__), "..", "samples")
     if os.path.isdir(samples_dir) is False:
         os.mkdir(samples_dir)
+
+    torch.set_printoptions(threshold=float('inf'), linewidth=200) # get full tensor
+
+    # print out to .txt
+    output_file = os.path.join(samples_dir, 'logits.txt')
+    with open(output_file, 'w') as file:
+        for idx, logit in enumerate(print_logits):
+            if not isinstance(logit, str):
+                logit = str(logit)
+            if idx == 0:
+                file.write(f"Original Seq: {logit}\n")
+            else:
+                file.write(f"Token {idx + 1}: {logit}\n")
+
+    print("Logits for tokens saved to samples/")
 
     for idx, tokenized_seq in enumerate(results):
         res_midi_dict = tokenizer.detokenize(tokenized_seq)

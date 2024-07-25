@@ -3,6 +3,7 @@
 import torch
 import torch._dynamo.config
 import torch._inductor.config
+import os
 
 from typing import List
 from tqdm import tqdm
@@ -119,6 +120,12 @@ def greedy_sample(
         f"Using hyperparams: temp={temperature}, top_p={top_p}, gamma={cfg_gamma}, gen_len={max_new_tokens}"
     )
 
+    # print out logits for Aditya
+    samples_dir = os.path.join(os.path.dirname(__file__), "..", "samples")
+    if os.path.isdir(samples_dir) is False:
+        os.mkdir(samples_dir)
+    print_logits = []
+
     for idx in (
         pbar := tqdm(
             range(_prompt_len, total_len),
@@ -142,11 +149,6 @@ def greedy_sample(
                     ),
                 )
 
-        if tokenizer.name == "separated_abs":
-            logits[:, tokenizer.tok_to_id[tokenizer.inst_start_tok]] = float(
-                "-inf"
-            )
-
         if temperature > 0.0:
             probs = torch.softmax(logits / temperature, dim=-1)
             next_token_ids = sample_top_p(probs, top_p).flatten()
@@ -164,6 +166,9 @@ def greedy_sample(
             tokenizer=tokenizer,
         )
 
+        # add logits to .txt
+        print_logits.append(logits)
+
         if all(seen_eos is True for seen_eos in eos_tok_seen):
             break
 
@@ -177,7 +182,8 @@ def greedy_sample(
         for res in decoded_results
     ]
 
-    return decoded_results
+    # return array with logits
+    return decoded_results, print_logits
 
 
 def sample_top_p(probs, p):
