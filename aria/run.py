@@ -206,9 +206,9 @@ def sample(args):
     torch.set_printoptions(threshold=float('inf'), linewidth=200) # get full tensor
 
     # print out to .txt
-    output_file = os.path.join(samples_dir, 'logits.txt')
-    print(f"Saving logits to {output_file}")
-    with open(output_file, 'w') as file:
+    logits_output_file = os.path.join(samples_dir, 'logits.txt')
+    print(f"Saving logits to {logits_output_file}")
+    with open(logits_output_file, 'w') as file:
         for idx, logit in enumerate(print_logits):
             if not isinstance(logit, str):
                 logit = str(logit)
@@ -218,6 +218,16 @@ def sample(args):
                 file.write(f"Token {idx + 1}: {logit}\n")
 
     print("Logits for tokens saved to samples/")
+
+    tokens_output_file = os.path.join(samples_dir, 'tokens.txt')
+    print(f"Saving tokens to {tokens_output_file}")
+    with open(tokens_output_file, 'w') as file:
+        for idx, token in enumerate(results):
+            if not isinstance(token, str):
+                token = str(token)
+            file.write(f"Token {idx}: {token}\n")
+
+    print("Tokens saved to samples/")
 
     for idx, tokenized_seq in enumerate(results):
         res_midi_dict = tokenizer.detokenize(tokenized_seq)
