@@ -4,7 +4,6 @@ import argparse
 import os
 import re
 import sys
-import torch
 
 
 def _parse_sample_args():
@@ -186,8 +185,7 @@ def sample(args):
 
     print(prompt_seq)
 
-    # get array with logits
-    results, print_logits = greedy_sample(
+    results = greedy_sample(
         model=model,
         tokenizer=tokenizer,
         prompts=prompts,
@@ -199,35 +197,9 @@ def sample(args):
         compile=args.compile,
     )
 
-    samples_dir = os.path.join(os.path.dirname(__file__), "samples")
-    if not os.path.exists(samples_dir):
-        os.makedirs(samples_dir)
-
-    torch.set_printoptions(threshold=float('inf'), linewidth=200) # get full tensor
-
-    # print out to .txt
-    logits_output_file = os.path.join(samples_dir, 'logits.txt')
-    print(f"Saving logits to {logits_output_file}")
-    with open(logits_output_file, 'w') as file:
-        for idx, logit in enumerate(print_logits):
-            if not isinstance(logit, str):
-                logit = str(logit)
-            if idx == 0:
-                file.write(f"Original Seq: {logit}\n")
-            else:
-                file.write(f"Token {idx + 1}: {logit}\n")
-
-    print("Logits for tokens saved to samples/")
-
-    tokens_output_file = os.path.join(samples_dir, 'tokens.txt')
-    print(f"Saving tokens to {tokens_output_file}")
-    with open(tokens_output_file, 'w') as file:
-        for idx, token in enumerate(results):
-            if not isinstance(token, str):
-                token = str(token)
-            file.write(f"Tokens: {token}\n")
-
-    print("Tokens saved to samples/")
+    samples_dir = os.path.join(os.path.dirname(__file__), "..", "samples")
+    if os.path.isdir(samples_dir) is False:
+        os.mkdir(samples_dir)
 
     for idx, tokenized_seq in enumerate(results):
         res_midi_dict = tokenizer.detokenize(tokenized_seq)
